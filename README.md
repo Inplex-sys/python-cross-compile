@@ -14,11 +14,6 @@ $ bash ./main.sh --archs
 Supported architectures: armv7, aarch64, i386, x86_64, ppc64le, mips64l
 ```
 
-```sh
-$ bash ./main.sh --archs
-Supported architectures: armv7, aarch64, i386, x86_64, ppc64le, mips64l
-```
-
 How it work
 ```sh
 $ bash ./main.sh --help
