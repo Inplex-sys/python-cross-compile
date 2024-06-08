@@ -6,6 +6,19 @@ This script is designed to facilitate the building of Docker images across multi
 
 The script operates by using Docker's ability to run containers with different CPU architectures than the host machine, thanks to QEMU user static binaries. This is achieved through the `multiarch/qemu-user-static` Docker image, which sets up the necessary emulation environment.
 
+## Help
+```sh
+Usage: builder.sh <arch> <entrypoint> [--list] [--imports import1,import2,...]
+
+Supported architectures:
+  • armv7l - Mostly used in IoT devices
+  • aarch64 - Most used in SBCs and phones
+  • i386 - Most common 32-bit architecture
+  • x86_64 - Most common 64-bit architecture
+  • ppc64le - Used in IBM Power Systems
+  • mips64 - Used in routers and IoT devices
+```
+
 ### Step-by-Step Operation
 
 The script is designed for cross-compiling Python projects for different architectures using Docker and QEMU. Here's a breakdown of how it works:
@@ -13,6 +26,7 @@ The script is designed for cross-compiling Python projects for different archite
 1. **Help Function**: Displays usage information and lists supported architectures. It's called if the user inputs incorrect arguments or requests it.
 
 2. **Argument Validation**: Checks if the correct number of arguments is provided. If not, it displays the help message and exits.
+The script allows for cross-compiling Python projects for different architectures using Docker and QEMU. A key feature is the ability to specify additional Python imports to include in the compilation process through the --imports option. This option takes a comma-separated list of Python modules that should be included as hidden imports by PyInstaller, enhancing the flexibility of the script for various project dependencies.
 
 3. **Set Architecture Variable**: Stores the first argument, which specifies the target architecture, in the `ARCH` variable.
 
