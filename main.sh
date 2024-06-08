@@ -23,7 +23,8 @@ ENTRYPOINT=$2
 HIDDEN_IMPORTS=""
 IMPORTS=""
 
-shift 2
+# Parse additional arguments
+shift 2 # Skip first two arguments
 while (( "$#" )); do
     case "$1" in
         --imports)
@@ -54,7 +55,7 @@ run_docker() {
         docker run --platform $1 --rm -t -v $(pwd):/root/ $2 /bin/bash -c "apt -qq update 2> /dev/null > /dev/null; \
         apt -qq install gcc zlib1g-dev -y 2> /dev/null > /dev/null; \
         pip3 -q install --upgrade pip; \
-        pip3 install $IMPORTS; \
+        pip3 install pyinstaller $IMPORTS; \
         pyinstaller /root/$ENTRYPOINT --distpath /root/ --onefile --clean $HIDDEN_IMPORTS > /dev/null; \
         mv /root/$ELF_FILE /root/$ENTRYPOINT_FILE-$ARCH"
 
