@@ -20,16 +20,17 @@ fi
 
 ARCH=$1
 ENTRYPOINT=$2
+HIDDEN_IMPORTS=""
 IMPORTS=""
 
-# Parse additional arguments
-shift 2 # Skip first two arguments
+shift 2
 while (( "$#" )); do
     case "$1" in
         --imports)
             IFS=',' read -ra ADDR <<< "$2"
             for i in "${ADDR[@]}"; do
-                IMPORTS+=" --hidden-import $i"
+                HIDDEN_IMPORTS+=" --hidden-import $i"
+                IMPORTS+=" $i"
             done
             shift 2
             ;;
@@ -47,12 +48,15 @@ run_docker() {
 
         docker run --rm --privileged multiarch/qemu-user-static --reset -p yes > /dev/null 2>&1
 
-        docker run --platform $1 --rm -t -v $(pwd):/root/ $2 /bin/bash -c "apt -qq update; \
-        apt -qq install gcc zlib1g-dev -y; \
+        ENTRYPOINT_FILE=$(basename $ENTRYPOINT)
+        ELF_FILE=$(echo $ENTRYPOINT_FILE | sed 's/.py//g')
+
+        docker run --platform $1 --rm -t -v $(pwd):/root/ $2 /bin/bash -c "apt -qq update 2> /dev/null > /dev/null; \
+        apt -qq install gcc zlib1g-dev -y 2> /dev/null > /dev/null; \
         pip3 -q install --upgrade pip; \
-        pip3 install psutil colored py-cpuinfo requests pyinstaller; \
-        pyinstaller /root/src/$ENTRYPOINT --distpath /root/ --onefile --clean $IMPORTS > /dev/null; \
-        mv /root/$ENTRYPOINT /root/$ENTRYPOINT-$ARCH"
+        pip3 install $IMPORTS; \
+        pyinstaller /root/$ENTRYPOINT --distpath /root/ --onefile --clean $HIDDEN_IMPORTS > /dev/null; \
+        mv /root/$ELF_FILE /root/$ENTRYPOINT_FILE-$ARCH"
 
         if [ $? -ne 0 ]; then
                 echo -e "[\e[31mERROR\e[0m] Build failed"
